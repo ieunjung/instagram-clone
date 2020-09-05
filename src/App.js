@@ -1,28 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import Posts from "./Posts";
+import { db } from "./firebase";
 
 function App() {
-  const [posts, setPost] = useState([
-    {
-      username: "cleverid",
-      caption: "Wow it is so cute!",
-      imageUrl:
-        "https://cdn.pixabay.com/photo/2016/04/25/18/07/halcyon-1352522_1280.jpg"
-    },
-    {
-      username: "heyyy",
-      caption: "DDPE",
-      imageUrl:
-        "https://cdn.pixabay.com/photo/2015/06/19/21/24/the-road-815297_1280.jpg"
-    },
-    {
-      username: "roda",
-      caption: "This is a fun project",
-      imageUrl:
-        "https://cdn.pixabay.com/photo/2013/11/28/10/36/road-220058_1280.jpg"
-    }
-  ]);
+  const [posts, setPost] = useState([]);
+
+  // useEffect : Runs a piece of code based on a specific condition.
+  // runs everytime the variable post changes
+  useEffect(() => {
+    db.collection("posts").onSnapshot((snapshot) => {
+      // every single time a new post is added, this code fires.
+      setPost(snapshot.docs.map((doc) => doc.data()));
+    });
+  }, [posts]);
 
   return (
     <div className="App">
@@ -36,14 +27,13 @@ function App() {
 
       <h1>Hello Instagam Clone App! 🚀</h1>
 
-      {posts.map((post) => 
+      {posts.map((post) => (
         <Posts
           username={post.username}
           caption={post.caption}
           imageUrl={post.imageUrl}
         />
-      )}
-
+      ))}
     </div>
   );
 }
